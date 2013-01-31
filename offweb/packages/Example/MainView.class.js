@@ -33,9 +33,9 @@ Pome.extend(".Pomegranate.framework.View", __CLASS__, {
 		that_v.$callForm = $("<form action='/'></form>")
 			.submit(function(event) { that_v.originateCall(event); })
 			.append("<h1>Originate A Call:</h1>")
-			.append("From Extension: <input type='text' name='extension' /><br />")
-			.append("Call Destination: <input type='text' name='phone-number' /><br />")
-			.append("Caller ID: <input type='text' name='caller-id' /><br />")
+			.append("From Extension: <input type='text' name='extension' placeholder='e.g. sip/100' /><br />")
+			.append("Call Destination: <input type='text' name='phone-number' placeholder='e.g. sip/101' /><br />")
+			.append("Caller ID: <input type='text' name='caller-id' placeholder='e.g. 100' /><br />")
 			.append("<input type='submit' value='Call' />")
 			.appendTo("body");
 	}
@@ -53,9 +53,9 @@ Pome.extend(".Pomegranate.framework.View", __CLASS__, {
 	, originateCall: function(event) {
 		event.preventDefault();
 		var that_v = this;
-		var extension = that_v.$loginForm.find("input[name='extension']").val()
-			, phone_number = that_v.$loginForm.find("input[name='phone-number']").val()
-			, caller_id = that_v.$loginForm.find("input[name='caller-id']").val();
+		var extension = that_v.$callForm.find("input[name='extension']").val()
+			, phone_number = that_v.$callForm.find("input[name='phone-number']").val()
+			, caller_id = that_v.$callForm.find("input[name='caller-id']").val();
 		that_v.trigger("Call", { extension: extension, phone_number: phone_number, caller_id: caller_id });
 	}
 });

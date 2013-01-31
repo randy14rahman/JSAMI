@@ -67,10 +67,9 @@ Pome.extend(".Pomegranate.framework.Controller", __CLASS__, {
 			return;
 		}
 		Pome.create(undefined, ".JSAMI.Message.Action.OriginateAction", [input.extension], function() {
-			this.setContext("custom-callboth");
-			this.setPriority("1");
-			this.setTimeout("30");
-			this.setExtension(input.phone_number);
+			this.setApplication("Dial");
+			this.setData(input.phone_number);
+			this.setTimeout("30000");
 			this.setCallerId(input.caller_id);
 			that_c.jsami.send(this);
 		});
