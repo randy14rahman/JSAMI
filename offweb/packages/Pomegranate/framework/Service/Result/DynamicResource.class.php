@@ -21,36 +21,39 @@ namespace Pomegranate\framework\Service\Result;
 
 class DynamicResource extends \Pomegranate\framework\Service\Result
 {
-	protected $filename;
-	protected $content;
-	protected $mime;
+    protected $filename;
+    protected $content;
+    protected $mime;
+    protected $disposition;
 
-	public function __construct($filename, $content, $mime = false)
-	{
-		$this->filename = $filename;
-		$this->content = $content;
-		$this->mime = $mime;
-	}
+    public function __construct($filename, $content, $mime = false, $disposition = 'attachment')
+    {
+        $this->filename = $filename;
+        $this->content = $content;
+        $this->mime = $mime;
+        $this->disposition = $disposition;
+    }
 
-	public function getData()
-	{
-		$etag = time();
-		$lastModified = date('D, j M Y H:i:s e', $etag);
+    public function getData()
+    {
+        $etag = time();
+        $lastModified = date('D, j M Y H:i:s e', $etag);
 
-		$r = array(
-			'filename' => $this->filename
-			, 'etag' => $etag
-			, 'last_modified' => $lastModified
-			, 'content' => $this->content
-		);
+        $r = array(
+            'filename' => $this->filename
+            , 'disposition' => $this->disposition
+            , 'etag' => $etag
+            , 'last_modified' => $lastModified
+            , 'content' => $this->content
+        );
 
-		if ($this->mime !== false) {
-			$r['mime'] = $this->mime;
-		}
-		else {
-			$r['extension'] = pathinfo($this->filename, PATHINFO_EXTENSION);
-		}
+        if ($this->mime !== false) {
+            $r['mime'] = $this->mime;
+        }
+        else {
+            $r['extension'] = pathinfo($this->filename, PATHINFO_EXTENSION);
+        }
 
-		return $r;
-	}
+        return $r;
+    }
 }

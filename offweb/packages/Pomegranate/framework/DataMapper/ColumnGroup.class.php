@@ -28,55 +28,55 @@ namespace Pomegranate\framework\DataMapper;
  */
 class ColumnGroup
 {
-	/**
-	 * Name of a porperty of the domain class up in the object
-	 * hierarchy wich should hold objects created out of fields
-	 * in this column group.
-	 * @var string
-	 */
-	public $container = '';
+    /**
+     * Name of a porperty of the domain class up in the object
+     * hierarchy wich should hold objects created out of fields
+     * in this column group.
+     * @var string
+     */
+    public $container = '';
 
-	/**
-	 * Number of database tables whose fields are grouped in this
-	 * column groups. Is used for automatic group size determination.
-	 * @var unknown_type
-	 */
-	public $numberOfTables = 1;
+    /**
+     * Number of database tables whose fields are grouped in this
+     * column groups. Is used for automatic group size determination.
+     * @var unknown_type
+     */
+    public $numberOfTables = 1;
 
-	/**
-	 * The db table which holds the primary key of this column group
-	 * @var unknown_type
-	 */
-	public $keyTableIndex = 0;
+    /**
+     * The db table which holds the primary key of this column group
+     * @var unknown_type
+     */
+    public $keyTableIndex = 0;
 
-	/**
-	 * Number of columns that this group is consisted of.
-	 * @var string
-	 */
-	public $size = '-1';
+    /**
+     * Number of columns that this group is consisted of.
+     * @var string
+     */
+    public $size = '-1';
 
-	/**
-	 * The name of class to instantiate objects for each
-	 * row of data when retrieved from database. Set null
-	 * so that stdClass is used instead.
-	 * @var string | null
-	 */
-	public $className = null;
+    /**
+     * The name of class to instantiate objects for each
+     * row of data when retrieved from database. Set null
+     * so that stdClass is used instead.
+     * @var string | null
+     */
+    public $className = null;
 
-	/**
-	 * Two instantiation methods are available: IdentityMap
-	 * and NewOperator. Using the IdentityMap you can make sure
-	 * that the same entity does not exist as two different
-	 * objects. NewOperator makes a new object each time some
-	 * entity is extracted from database.
-	 * @var string
-	 */
-	public $instantiationMethod = 'IdentityMap';
+    /**
+     * Two instantiation methods are available: IdentityMap
+     * and NewOperator. Using the IdentityMap you can make sure
+     * that the same entity does not exist as two different
+     * objects. NewOperator makes a new object each time some
+     * entity is extracted from database.
+     * @var string
+     */
+    public $instantiationMethod = 'IdentityMap';
 
-	/**
-	 * Some extra information that are used in Mapper class
-	 * for intermediate work.
-	 * @var array
-	 */
-	public $extra = array();
+    /**
+     * Some extra information that are used in Mapper class
+     * for intermediate work.
+     * @var array
+     */
+    public $extra = array();
 }

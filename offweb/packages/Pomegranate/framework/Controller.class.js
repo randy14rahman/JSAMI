@@ -17,216 +17,302 @@
  **/
 
 Pomegranate.extend(".Pomegranate.framework.MvcBase", __CLASS__, {
-	init: function(parent) {
-		this._super(parent);
-		this.controllers = {};
-		this.views = {};
-	}
+    init: function(parent) {
+        this._super(parent);
+        this.controllers = {};
+        this.views = {};
+    }
 
-	//Controller loader.
-	//input: { context, id, class_path, onload, params }
-	, controller: function(input) {
-		var that_c = this;
+    //Controller loader.
+    //input: { context, id, class_path, onload, params }
+    , controller: function(input) {
+        var that_c = this;
 
-		if (input.context) {
-			input.base = this.getNamespacePath(input.context);
-			delete input["context"];
-		}
+        if (input.context) {
+            input.base = this.getNamespacePath(input.context);
+            delete input["context"];
+        }
 
-		if (input.params && !jQuery.isArray(input.params))
-			input.params = [input.params];
+        if (input.params && !jQuery.isArray(input.params))
+            input.params = [input.params];
 
-		if (input.id && that_c.controllers[input.id]) {
-			if (jQuery.isFunction(input.onload)) {
-				if (input.params)
-					input.onload.apply(that_c.controllers[input.id], input.params);
-				else
-					input.onload.call(that_c.controllers[input.id]);
-			}
-		}
-		else
-			Pomegranate.create(input.base, input.class_path, [this], function() {
-				if (input.id) {
-					this.id = input.id;
-					that_c.controllers[input.id] = this;
-				}
-				else {
-					this.id = that_c.randomControllerId();
-					that_c.controllers[this.id] = this;
-				}
+        if (input.id && that_c.controllers[input.id]) {
+            if (jQuery.isFunction(input.onload)) {
+                if (input.params)
+                    input.onload.apply(that_c.controllers[input.id], input.params);
+                else
+                    input.onload.call(that_c.controllers[input.id]);
+            }
+        }
+        else
+            Pomegranate.create(input.base, input.class_path, [this], function() {
+                if (input.id) {
+                    this.id = input.id;
+                    that_c.controllers[input.id] = this;
+                }
+                else {
+                    this.id = that_c.randomControllerId();
+                    that_c.controllers[this.id] = this;
+                }
 
-				if (jQuery.isFunction(input.onload)) {
-					if (input.params)
-						input.onload.apply(this, input.params);
-					else
-						input.onload.call(this);
-				}
-			});
-	}
+                if (jQuery.isFunction(input.onload)) {
+                    if (input.params)
+                        input.onload.apply(this, input.params);
+                    else
+                        input.onload.call(this);
+                }
+            });
+    }
 
-	//View loader.
-	//input: { context, id, class_path, onload, params }
-	, view: function(input) {
-		var that_c = this;
+    //View loader.
+    //input: { context, id, class_path, onload, params }
+    , view: function(input) {
+        var that_c = this;
 
-		if (input.context) {
-			input.base = this.getNamespacePath(input.context);
-			delete input["context"];
-		}
+        if (input.context) {
+            input.base = this.getNamespacePath(input.context);
+            delete input["context"];
+        }
 
-		if (input.params && !jQuery.isArray(input.params))
-			input.params = [input.params];
+        if (input.params && !jQuery.isArray(input.params))
+            input.params = [input.params];
 
-		if (input.id && that_c.views[input.id]) {
-			if (jQuery.isFunction(input.onload)) {
-				if (input.params)
-					input.onload.apply(that_c.views[input.id], input.params);
-				else
-					input.onload.call(that_c.views[input.id]);
-			}
-		}
-		else
-			Pomegranate.create(input.base, input.class_path, [this], function() {
-				if (input.id) {
-					this.id = input.id;
-					that_c.views[input.id] = this;
-				}
-				else {
-					this.id = that_c.randomViewId();
-					that_c.views[this.id] = this;
-				}
+        if (input.id && that_c.views[input.id]) {
+            if (jQuery.isFunction(input.onload)) {
+                if (input.params)
+                    input.onload.apply(that_c.views[input.id], input.params);
+                else
+                    input.onload.call(that_c.views[input.id]);
+            }
+        }
+        else
+            Pomegranate.create(input.base, input.class_path, [this], function() {
+                if (input.id) {
+                    this.id = input.id;
+                    that_c.views[input.id] = this;
+                }
+                else {
+                    this.id = that_c.randomViewId();
+                    that_c.views[this.id] = this;
+                }
 
-				if (jQuery.isFunction(input.onload)) {
-					if (input.params)
-						input.onload.apply(this, input.params);
-					else
-						input.onload.call(this);
-				}
-			});
-	}
+                if (jQuery.isFunction(input.onload)) {
+                    if (input.params)
+                        input.onload.apply(this, input.params);
+                    else
+                        input.onload.call(this);
+                }
+            });
+    }
 
-	//Model loader.
-	//input: { context, class_path, method, params, callback }
-	, model: function(input) {
-		if (input.context) {
-			input.base = this.getNamespacePath(input.context);
-			delete input["context"];
-		}
-		return Pomegranate.model(input);
-	}
+    //Model loader.
+    //input: { context, class_path, method, params, callback }
+    , model: function(input) {
+        if (input.context) {
+            input.base = this.getNamespacePath(input.context);
+            delete input["context"];
+        }
+        return Pomegranate.model(input);
+    }
 
-	//Sends a command request. Each command request is identical to a model request except that it will not wait for a package to form, even if the 'PackModelRequests' is set.
-	//input: { context, class_path, method, params, callback }
-	, command: function(input) {
-		if (input.context) {
-			input.base = this.getNamespacePath(input.context);
-			delete input["context"];
-		}
-		return Pomegranate.command(input);
-	}
+    //Sends a command request. Each command request is identical to a model request except that it will not wait for a package to form, even if the 'PackModelRequests' is set.
+    //input: { context, class_path, method, params, callback }
+    , command: function(input) {
+        if (input.context) {
+            input.base = this.getNamespacePath(input.context);
+            delete input["context"];
+        }
+        return Pomegranate.command(input);
+    }
 
-	//input: { context, class_path, method, params, callback }
-	, download: function(input) {
-		if (input.context) {
-			input.base = this.getNamespacePath(input.context);
-			delete input["context"];
-		}
-		return Pomegranate.download(input);
-	}
-	
-	//input: { context, class_path, method, params, files: { field-name: file }, callback, failed, aborted, progress }
-	, upload: function(input, files) {
-		if (input.context) {
-			input.base = this.getNamespacePath(input.context);
-			delete input["context"];
-		}
-		return Pomegranate.upload(input, files);
-	}
+    //input: { context, class_path, method, params, callback }
+    , download: function(input) {
+        if (input.context) {
+            input.base = this.getNamespacePath(input.context);
+            delete input["context"];
+        }
+        return Pomegranate.download(input);
+    }
 
-	, getPackage: function() {
-		return this.parentController.getPackage();
-	}
+    , resource: function(input) {
+        if (input.context) {
+            input.base = this.getNamespacePath(input.context);
+            delete input["context"];
+        }
+        return Pomegranate.resource(input);
+    }
 
-	, getParent: function() {
-		return this.parentController;
-	}
+    //input: { context, class_path, method, params, files: { field-name: file }, callback, failed, aborted, progress }
+    , upload: function(input, files) {
+        if (input.context) {
+            input.base = this.getNamespacePath(input.context);
+            delete input["context"];
+        }
+        return Pomegranate.upload(input, files);
+    }
 
-	, generateRandId: function() {
-		return "rndid_" + (Math.floor(Math.random() * 1000000000));
-	}
+    , getPackage: function() {
+        return this.parentController.getPackage();
+    }
 
-	, randomControllerId: function() {
-		var id = null;
-		do {
-			id = this.generateRandId();
-		} while (this.controllers[id]);
-		return id;
-	}
+    , getParent: function() {
+        return this.parentController;
+    }
 
-	, randomViewId: function() {
-		var id = null;
-		do {
-			id = this.generateRandId();
-		} while (this.views[id]);
-		return id;
-	}
+    , generateRandId: function() {
+        return "rndid_" + (Math.floor(Math.random() * 1000000000));
+    }
 
-	, removeChild: function(Object) {
-		for (var index in this.views)
-			if (this.views[index] == Object) {
-				delete this.views[index];
-				break;
-			}
-		for (var index in this.controllers)
-			if (this.controllers[index] == Object) {
-				delete this.controllers[index];
-				break;
-			}
-	}
-	
-	, dispose : function() {
-		this._super();
-		for (var index in this.controllers)
-			this.controllers[index].destroy();
-		this.controllers = [];
-		for (var index in this.views)
-			this.views[index].destroy();
-		this.views = [];
-		this.getParent().removeChild(this);
-	}
-	
-	, getNamespacePath: function(path) {
-		var namespace_pieces = path.split(".");
-		namespace_pieces.pop();
-		return namespace_pieces.join(".");
-	}
-	
-	, models: function(inputs, callback) {
-		var that_c = this;
-		Pome.create(undefined, ".Pomegranate.framework.SignalCounter", [inputs.length], function() {
-			var responses = [];
-			for (var index in inputs)
-				responses.push(undefined);
+    , randomControllerId: function() {
+        var id = null;
+        do {
+            id = this.generateRandId();
+        } while (this.controllers[id]);
+        return id;
+    }
 
-			var thread = this;
-			thread.addHandler(function() {
-				callback.apply({}, [responses]);
-			});
-			
-			var _cb = function(response, id) {
-				for (var index in inputs) {
-					if (id == inputs[index].id) {
-						responses[index] = response;
-						break;
-					}
-				}
-				thread.signal();
-			}
+    , randomViewId: function() {
+        var id = null;
+        do {
+            id = this.generateRandId();
+        } while (this.views[id]);
+        return id;
+    }
 
-			for (var index in inputs) {
-				inputs[index].callback = _cb;
-				that_c.model(inputs[index]);
-			}
-		});
-	}
+    , removeChild: function(Object) {
+        for (var index in this.views)
+            if (this.views[index] == Object) {
+                delete this.views[index];
+                break;
+            }
+        for (var index in this.controllers)
+            if (this.controllers[index] == Object) {
+                delete this.controllers[index];
+                break;
+            }
+    }
+    
+    , dispose : function() {
+        this._super();
+        for (var index in this.controllers)
+            this.controllers[index].destroy();
+        this.controllers = [];
+        for (var index in this.views)
+            this.views[index].destroy();
+        this.views = [];
+        this.getParent().removeChild(this);
+    }
+    
+    , getNamespacePath: function(path) {
+        var namespace_pieces = path.split(".");
+        namespace_pieces.pop();
+        return namespace_pieces.join(".");
+    }
+    
+    , models: function(inputs, callback) {
+        var that_c = this;
+        Pome.create(undefined, ".Pomegranate.framework.SignalCounter", [inputs.length], function() {
+            var responses = [];
+            for (var index in inputs)
+                responses.push(undefined);
+
+            var thread = this;
+            thread.addHandler(function() {
+                if (callback) {
+                    callback.apply({}, [responses]);
+                }
+            });
+            
+            var _cb = function(response, id) {
+                for (var index in inputs) {
+                    if (id == inputs[index].id) {
+                        responses[index] = response;
+                        break;
+                    }
+                }
+                thread.signal();
+            }
+
+            for (var index in inputs) {
+                inputs[index].callback = _cb;
+                that_c.model(inputs[index]);
+            }
+        });
+    }
+
+    , loadControllers: function(inputs, onload) {
+        var that_c = this;
+
+        for (var index in inputs) {
+            if (!inputs[index].id) {
+                inputs[index].id = that_c.randomControllerId();
+            }
+        }
+
+        Pome.create(undefined, ".Pomegranate.framework.SignalCounter", [inputs.length], function() {
+            var objs = [];
+            for (var index in inputs)
+                objs.push(undefined);
+
+            var thread = this;
+            thread.addHandler(function() {
+                if (onload) {
+                    onload.apply({}, [objs]);
+                }
+            });
+            
+            var _cb = function() {
+                for (var index in inputs) {
+                    if (this.getObjectID() == inputs[index].id) {
+                        objs[index] = this;
+                        break;
+                    }
+                }
+                thread.signal();
+            }
+
+            for (var index in inputs) {
+                inputs[index].onload = _cb;
+                that_c.controller(inputs[index]);
+            }
+        });
+    }
+
+    , loadViews: function(inputs, onload) {
+        var that_c = this;
+
+        for (var index in inputs) {
+            if (!inputs[index].id) {
+                inputs[index].id = that_c.randomViewId();
+            }
+        }
+
+        Pome.create(undefined, ".Pomegranate.framework.SignalCounter", [inputs.length], function() {
+            var objs = [];
+            for (var index in inputs)
+                objs.push(undefined);
+
+            var thread = this;
+            thread.addHandler(function() {
+                if (onload) {
+                    onload.apply({}, [objs]);
+                }
+            });
+            
+            var _cb = function() {
+                for (var index in inputs) {
+                    if (this.getObjectID() == inputs[index].id) {
+                        objs[index] = this;
+                        break;
+                    }
+                }
+                thread.signal();
+            }
+
+            for (var index in inputs) {
+                inputs[index].onload = _cb;
+                that_c.view(inputs[index]);
+            }
+        });
+    }
 });

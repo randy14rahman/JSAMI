@@ -17,39 +17,39 @@
  **/
 
 Pomegranate.extend(".Class", __CLASS__, {
-	init: function(caller, interval) {
-		this._super();
-		var pipe = this;
-		pipe.caller = caller;
-		pipe.interval = interval;
-		pipe.queue = [];
-		pipe.intervalID = null;
+    init: function(caller, interval) {
+        this._super();
+        var pipe = this;
+        pipe.caller = caller;
+        pipe.interval = interval;
+        pipe.queue = [];
+        pipe.intervalID = null;
 
-		if (!pipe.interval || pipe.interval <= 0) {
-			pipe.add = function(item) {
-				pipe.caller.call([item]);
-			};
-		}
-		else {
-			pipe.add = function(item) {
-				pipe.queue.push(item);
-			};
+        if (!pipe.interval || pipe.interval <= 0) {
+            pipe.add = function(item) {
+                pipe.caller.call([item]);
+            };
+        }
+        else {
+            pipe.add = function(item) {
+                pipe.queue.push(item);
+            };
 
-			var exec = function() {
-				var copy = pipe.queue.slice(0);
-				pipe.queue = [];
-				pipe.caller(copy);
-			};
+            var exec = function() {
+                var copy = pipe.queue.slice(0);
+                pipe.queue = [];
+                pipe.caller(copy);
+            };
 
-			pipe.intervalID = setInterval(exec, pipe.interval);
-		}
-	}
+            pipe.intervalID = setInterval(exec, pipe.interval);
+        }
+    }
 
-	, stop: function() {
-		var pipe = this;
-		if (pipe.intervalID !== null) {
-			clearInterval(pipe.intervalID);
-			pipe.intervalID = null;
-		}
-	}
+    , stop: function() {
+        var pipe = this;
+        if (pipe.intervalID !== null) {
+            clearInterval(pipe.intervalID);
+            pipe.intervalID = null;
+        }
+    }
 });

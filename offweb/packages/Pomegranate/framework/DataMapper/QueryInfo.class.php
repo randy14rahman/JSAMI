@@ -27,38 +27,60 @@ namespace Pomegranate\framework\DataMapper;
  */
 class QueryInfo
 {
-	/**
-	 * XML filename.
-	 * @var string
-	 */
-	public $fileName = '';
+    const PARAM_BOOL = \PDO::PARAM_BOOL;
+    const PARAM_NULL = \PDO::PARAM_NULL;
+    const PARAM_INT = \PDO::PARAM_INT;
+    const PARAM_STR = \PDO::PARAM_STR;
+    const PARAM_LOB = \PDO::PARAM_LOB;
+    const PARAM_STMT = \PDO::PARAM_STMT;
+    const PARAM_INPUT_OUTPUT = \PDO::PARAM_INPUT_OUTPUT;
 
-	/**
-	 * The name for SQL statement, which is the same as
-	 * 'name' attribute for 'Query' tag in XML.
-	 * @var string
-	 */
-	public $name = '';
+    /**
+     * XML filename.
+     * @var string
+     */
+    public $fileName = '';
 
-	/**
-	 * The SQL statement which is the body part of the 'SQL' tag
-	 * in XML.
-	 * @var string
-	 */
-	public $SQL = '';
+    /**
+     * The name for SQL statement, which is the same as
+     * 'name' attribute for 'Query' tag in XML.
+     * @var string
+     */
+    public $name = '';
 
-	/**
-	 * An array of ColumnGroup(s) loaded from XML file. One QueryInfo
-	 * can have zero to arbitrary number of ColumnGroup(s).
-	 * @var array
-	 */
-	public $columnGroups = array();	//of type ColumnGroup
+    /**
+     * The SQL statement which is the body part of the 'SQL' tag
+     * in XML.
+     * @var string
+     */
+    public $SQL = '';
 
-	/**
-	 * Maps database table names to domain model class names.
-	 * ColumnGroup tags can override this mapping by specifying
-	 * class for a group of fields.
-	 * @var string
-	 */
-	public $tableMapper = array();
+    /**
+     * An array of ColumnGroup(s) loaded from XML file. One QueryInfo
+     * can have zero to arbitrary number of ColumnGroup(s).
+     * @var array
+     */
+    public $columnGroups = array();    //of type ColumnGroup
+
+    /**
+     * Maps database table names to domain model class names.
+     * ColumnGroup tags can override this mapping by specifying
+     * class for a group of fields.
+     * @var string
+     */
+    public $tableMapper = array();
+
+    public $values = array();
+
+    public $params = array();
+
+    public function bindValue($parameter, $value, $data_type = self::PARAM_STR)
+    {
+        $this->values[$parameter] = array('value' => $value, 'data_type' => $data_type);
+    }
+
+    public function bindParam($parameter, &$variable, $data_type = self::PARAM_STR, $length = -1, $driver_options = false)
+    {
+        $this->params[$parameter] = array('variable' => &$variable, 'data_type' => $data_type, 'length' => $length, 'driver_options' => $driver_options);
+    }
 }

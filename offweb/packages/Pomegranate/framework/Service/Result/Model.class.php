@@ -21,22 +21,22 @@ namespace Pomegranate\framework\Service\Result;
 
 class Model extends \Pomegranate\framework\Service\Result
 {
-	protected $status = array('success' => true, 'message' => '');
-	protected $data = null;
+    protected $status = array('success' => true, 'message' => '');
+    protected $data = null;
 
-	public function __construct($success = true, $message = '', $data = null)
-	{
-		$this->status = array('success' => $success, 'message' => $message);
-		$this->data = $data;
-	}
+    public function __construct($success = true, $message = '', $data = null)
+    {
+        $this->status = array('success' => $success, 'message' => $message);
+        $this->data = $data;
+    }
 
-	public function getData()
-	{
-		return $this->data;
-	}
+    public function getData()
+    {
+        return $this->data;
+    }
 
-	public function getStatus()
-	{
-		return $this->status;
-	}
+    public function getStatus()
+    {
+        return $this->status;
+    }
 }

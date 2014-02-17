@@ -21,95 +21,95 @@ namespace Pomegranate\framework\RpcServer;
 
 class Request
 {
-	/**
-	 * Class Path
-	 * @var string
-	 */
-	protected $_classPath = '';
+    /**
+     * Class Path
+     * @var string
+     */
+    protected $_classPath = '';
 
-	/**
-	 * Flag
-	 * @var bool
-	 */
-	protected $_isMethodError = false;
+    /**
+     * Flag
+     * @var bool
+     */
+    protected $_isMethodError = false;
 
-	/**
-	 * Requested method
-	 * @var string
-	 */
-	protected $_method;
+    /**
+     * Requested method
+     * @var string
+     */
+    protected $_method;
 
-	/**
-	 * Regex for method
-	 * @var string
-	 */
-	protected $_methodRegex = '/^[a-z][a-z0-9_.]*$/i';
+    /**
+     * Regex for method
+     * @var string
+     */
+    protected $_methodRegex = '/^[a-z][a-z0-9_.]*$/i';
 
-	protected $errors = array();
-	
-	/**
-	 * Set request method
-	 *
-	 * @param  string $name
-	 * @return Zend_Json_Server_Request
-	 */
-	public function setMethod($name)
-	{
-		if (!preg_match($this->_methodRegex, $name)) {
-			$this->_isMethodError = true;
-		} else {
-			$this->_method = $name;
-		}
-		return $this;
-	}
+    protected $errors = array();
+    
+    /**
+     * Set request method
+     *
+     * @param  string $name
+     * @return Zend_Json_Server_Request
+     */
+    public function setMethod($name)
+    {
+        if (!preg_match($this->_methodRegex, $name)) {
+            $this->_isMethodError = true;
+        } else {
+            $this->_method = $name;
+        }
+        return $this;
+    }
 
-	/**
-	 * Get request method name
-	 *
-	 * @return string
-	 */
-	public function getMethod()
-	{
-		return $this->_method;
-	}
+    /**
+     * Get request method name
+     *
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->_method;
+    }
 
-	/**
-	 * Is it a bad request?
-	 *
-	 * @return bool
-	 */
-	public function isFault()
-	{
-		return count($this->errors) > 0;
-	}
+    /**
+     * Is it a bad request?
+     *
+     * @return bool
+     */
+    public function isFault()
+    {
+        return count($this->errors) > 0;
+    }
 
-	/**
-	 * Indicate fault request
-	 *
-	 * @param  string $fault
-	 * @param  int $code
-	 * @param  mixed $data
-	 * @return \Pomegranate\framework\RpcServer\Error
-	 */
-	public function fault($fault = null, $code = 404, $data = null)
-	{
-		$error = new \Pomegranate\framework\RpcServer\Error($fault, $code, $data);
-		$this->errors[] = $error;
-		return $error;
-	}
-	
-	/**
-	 * Returns request's faults
-	 *
-	 * @return array
-	 */
-	public function getFault()
-	{
-		return $this->errors;
-	}
-	
-	public function getClass()
-	{
-		return $this->_classPath;
-	}
+    /**
+     * Indicate fault request
+     *
+     * @param  string $fault
+     * @param  int $code
+     * @param  mixed $data
+     * @return \Pomegranate\framework\RpcServer\Error
+     */
+    public function fault($fault = null, $code = 404, $data = null)
+    {
+        $error = new \Pomegranate\framework\RpcServer\Error($fault, $code, $data);
+        $this->errors[] = $error;
+        return $error;
+    }
+    
+    /**
+     * Returns request's faults
+     *
+     * @return array
+     */
+    public function getFault()
+    {
+        return $this->errors;
+    }
+    
+    public function getClass()
+    {
+        return $this->_classPath;
+    }
 }

@@ -21,32 +21,33 @@ namespace Pomegranate\framework\Resource;
 
 class Request extends \Pomegranate\framework\Json\Request
 {
-	public function __construct($path)
-	{
-		$path = \Pomegranate\framework\utilities\FileSystemAddress::ConcatAddresses('/', $path);
-		if (strpos($path, '/_') !== false || strpos($path, '/.') !== false) {
-			$json = "{ \"method\": \"NotAuthorized\", \"params\": [\"$path\"], \"id\": -1 }";
-		}
-		else {
-			$config = \Zend_Registry::get('config');
-			$file_path = \Pomegranate\framework\utilities\FileSystemAddress::ConcatAddresses($config->package_root, $path);
-			$ext = pathinfo($file_path, PATHINFO_EXTENSION);
-			$json = '';
-			switch (strtolower($ext)) {
-				case 'php':
-				case 'js':
-				case 'html':
-				case 'htm':
-					$json = "{ \"method\": \"Evaluate\", \"params\": [\"$file_path\"], \"id\": -1 }";
-					break;
+    public function __construct($path)
+    {
+        $path = \Pomegranate\framework\utilities\FileSystemAddress::ConcatAddresses('/', $path);
+        if (strpos($path, '/_') !== false || strpos($path, '/.') !== false) {
+            $json = "{ \"method\": \"NotAuthorized\", \"params\": [\"$path\"], \"id\": -1 }";
+        }
+        else {
+            $config = \Zend_Registry::get('config');
+            $file_path = \Pomegranate\framework\utilities\FileSystemAddress::ConcatAddresses($config->package_root, $path);
+            $ext = pathinfo($file_path, PATHINFO_EXTENSION);
+            $json = '';
+            switch (strtolower($ext)) {
+                case 'php':
+                case 'js':
+                case 'html':
+                case 'htm':
+                case 'css':
+                    $json = "{ \"method\": \"Evaluate\", \"params\": [\"$file_path\"], \"id\": -1 }";
+                    break;
 
-				default:
-					$json = "{ \"method\": \"Read\", \"params\": [\"$file_path\"], \"id\": -1 }";
-					break;
-			}
-		}
+                default:
+                    $json = "{ \"method\": \"Read\", \"params\": [\"$file_path\"], \"id\": -1 }";
+                    break;
+            }
+        }
 
-		$this->loadJson($json);
-		$this->_classPath = '\\Pomegranate\\framework\\Services';
-	}
+        $this->loadJson($json);
+        $this->_classPath = '\\Pomegranate\\framework\\Services';
+    }
 }

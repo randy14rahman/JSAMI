@@ -17,46 +17,46 @@
  **/
 
 Pomegranate.extend(".Class", __CLASS__, {
-	init: function(threshold) {
-		this._super();
-		this.counter = 0;
-		this.handlers = [];
-		this.params = [];
-		this.threshold = threshold;
-	}
+    init: function(threshold) {
+        this._super();
+        this.counter = 0;
+        this.handlers = [];
+        this.params = [];
+        this.threshold = threshold;
+    }
 
-	, signal: function() {
-		this.counter++;
-		if (this.threshold == this.counter && this.handlers.length > 0)
-			this.execute();
-	}
+    , signal: function() {
+        this.counter++;
+        if (this.threshold == this.counter && this.handlers.length > 0)
+            this.execute();
+    }
 
-	, addHandler: function(h, p) {
-		p = p || [];
-		if (this.threshold <= this.counter) {
-			var obj = {};
-			if (!p)
-				this.params.push([]);
-			else if (jQuery.isArray(p))
-				this.params.push(p);
-			else
-				h.apply(obj, [p]);
-		}
-		else {
-			this.handlers.push(h);
-			if (!p)
-				this.params.push([]);
-			else if (jQuery.isArray(p))
-				this.params.push(p);
-			else
-				this.params.push([p]);
-		}
-	}
+    , addHandler: function(h, p) {
+        p = p || [];
+        if (this.threshold <= this.counter) {
+            var obj = {};
+            if (!p)
+                this.params.push([]);
+            else if (jQuery.isArray(p))
+                this.params.push(p);
+            else
+                h.apply(obj, [p]);
+        }
+        else {
+            this.handlers.push(h);
+            if (!p)
+                this.params.push([]);
+            else if (jQuery.isArray(p))
+                this.params.push(p);
+            else
+                this.params.push([p]);
+        }
+    }
 
-	, execute: function() {
-		for (var index in this.handlers) {
-			var obj = {};
-			this.handlers[index].apply(obj, this.params[index]);
-		}
-	}
+    , execute: function() {
+        for (var index in this.handlers) {
+            var obj = {};
+            this.handlers[index].apply(obj, this.params[index]);
+        }
+    }
 });

@@ -64,8 +64,8 @@ abstract class RpcAbstract implements RpcInterface
      * @var bool
      */
     protected $_autoEmitResponse = true;
-	
-	/**
+    
+    /**
      * @deprecated
      * @var array List of PHP magic methods (lowercased)
      */

@@ -21,16 +21,16 @@ namespace Pomegranate\framework;
 
 class Exception extends \Exception
 {
-	private $extra = null;
+    private $extra = null;
 
-	public function __construct($message, $code = 0, \Exception $previous = null, $extra = null)
-	{
-		parent::__construct($message, $code, $previous);
-		$this->extra = $extra;
-	}
+    public function __construct($message, $code = 0, \Exception $previous = null, $extra = null)
+    {
+        parent::__construct($message, $code, $previous);
+        $this->extra = $extra;
+    }
 
-	public function getExtra()
-	{
-		return $this->extra;
-	}
+    public function getExtra()
+    {
+        return $this->extra;
+    }
 }

@@ -21,19 +21,21 @@ namespace Pomegranate\framework\Service\Result;
 
 class LocalFile extends \Pomegranate\framework\Service\Result
 {
-	protected $file_path = '';
+    protected $file_path = '';
+    protected $disposition;
 
-	public function __construct($file_path)
-	{
-		$this->file_path = $file_path;
-		if (!file_exists($file_path)) {
-			//Early error generation
-			file_get_contents($file_path);
-		}
-	}
+    public function __construct($file_path, $disposition = 'inline')
+    {
+        $this->file_path = $file_path;
+        $this->disposition = $disposition;
+        if (!file_exists($file_path)) {
+            //Early error generation
+            file_get_contents($file_path);
+        }
+    }
 
-	public function getData()
-	{
-		return array('file_path' => $this->file_path);
-	}
+    public function getData()
+    {
+        return array('file_path' => $this->file_path, 'disposition' => $this->disposition);
+    }
 }

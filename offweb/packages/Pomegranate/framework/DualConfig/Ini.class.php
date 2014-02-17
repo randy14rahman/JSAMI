@@ -21,8 +21,8 @@ namespace Pomegranate\framework\DualConfig;
 
 class Ini extends \Pomegranate\framework\DualConfig
 {
-	public function __construct($masterFilePath, $slaveFileExtension, $sectionName)
-	{
-		parent::__construct($masterFilePath, $slaveFileExtension, $sectionName, '\\Zend_Config_Ini', '\\Zend_Config_Writer_Ini');
-	}
+    public function __construct($masterFilePath, $slaveFileExtension, $sectionName)
+    {
+        parent::__construct($masterFilePath, $slaveFileExtension, $sectionName, '\\Zend_Config_Ini', '\\Zend_Config_Writer_Ini');
+    }
 }

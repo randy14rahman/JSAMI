@@ -21,31 +21,31 @@ namespace Pomegranate\framework\RpcServer\Response;
 
 abstract class Http extends \Pomegranate\framework\RpcServer\Response
 {
-	protected $headers = array();
+    protected $headers = array();
 
-	protected function get_mime_type($extension)
-	{
-		$config = \Zend_Registry::get('config');
-		$mimePath = $config->mime_db_path;
-		$regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($extension\s)/i";
-		$lines = file($mimePath);
-		foreach ($lines as $line) {
-			if (substr($line, 0, 1) == '#')
-				continue; // skip comments
-			$line = rtrim($line) . " ";
-			if (!preg_match($regex, $line, $matches))
-				continue; // no match to the extension
-			return $matches[1];
-		}
-		return false; // no match at all
-	}
+    protected function get_mime_type($extension)
+    {
+        $config = \Zend_Registry::get('config');
+        $mimePath = $config->mime_db_path;
+        $regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($extension\s)/i";
+        $lines = file($mimePath);
+        foreach ($lines as $line) {
+            if (substr($line, 0, 1) == '#')
+                continue; // skip comments
+            $line = rtrim($line) . " ";
+            if (!preg_match($regex, $line, $matches))
+                continue; // no match to the extension
+            return $matches[1];
+        }
+        return false; // no match at all
+    }
 
-	public function output()
-	{
-		$this->sendHeaders();
-		$this->sendContent();
-	}
+    public function output()
+    {
+        $this->sendHeaders();
+        $this->sendContent();
+    }
 
-	abstract public function sendHeaders();
-	abstract public function sendContent();
+    abstract public function sendHeaders();
+    abstract public function sendContent();
 }

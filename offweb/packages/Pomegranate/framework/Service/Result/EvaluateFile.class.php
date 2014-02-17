@@ -21,44 +21,47 @@ namespace Pomegranate\framework\Service\Result;
 
 class EvaluateFile extends \Pomegranate\framework\Service\Result
 {
-	protected $file_path = '';
-	protected $content = '';
+    protected $file_path = '';
+    protected $content = '';
+    protected $disposition;
 
-	public function __construct($file_path)
-	{
-		$this->file_path = $file_path;
-		ob_start();
-		require $this->file_path;
-		$evaluation = ob_get_contents();
-		ob_clean();
+    public function __construct($file_path, $disposition = 'inline')
+    {
+        $this->file_path = $file_path;
+        $this->disposition = $disposition;
+        ob_start();
+        require $this->file_path;
+        $evaluation = ob_get_contents();
+        ob_clean();
 
-		$evaluation = strtr($evaluation, array("__PATH__" => '"'.$file_path.'"'));
-		
-		$config = \Zend_Registry::get('config');
-		if (strpos($file_path, $config->package_root) === 0
-		&& substr($file_path, -9) == '.class.js') {
-			$class_path = substr($file_path, strlen($config->package_root));
-			$class_path = substr($class_path, 0, -9);
-			$class_path = strtr($class_path, array(DIRECTORY_SEPARATOR => '.'));
-			$evaluation = strtr($evaluation, array('__CLASS__' => '"'.$class_path.'"'));
-		}
-		
-		$this->content = $evaluation;
-	}
+        $evaluation = strtr($evaluation, array("__PATH__" => '"'.$file_path.'"'));
+        
+        $config = \Zend_Registry::get('config');
+        if (strpos($file_path, $config->package_root) === 0
+        && substr($file_path, -9) == '.class.js') {
+            $class_path = substr($file_path, strlen($config->package_root));
+            $class_path = substr($class_path, 0, -9);
+            $class_path = strtr($class_path, array(DIRECTORY_SEPARATOR => '.'));
+            $evaluation = strtr($evaluation, array('__CLASS__' => '"'.$class_path.'"'));
+        }
+        
+        $this->content = $evaluation;
+    }
 
-	public function getData()
-	{
-		$filename = pathinfo($this->file_path, PATHINFO_FILENAME);
-		$extension = pathinfo($this->file_path, PATHINFO_EXTENSION);
-		$etag = filemtime($this->file_path);
-		$lastModified = date('D, j M Y H:i:s e', $etag);
+    public function getData()
+    {
+        $filename = pathinfo($this->file_path, PATHINFO_FILENAME);
+        $extension = pathinfo($this->file_path, PATHINFO_EXTENSION);
+        $etag = filemtime($this->file_path);
+        $lastModified = date('D, j M Y H:i:s e', $etag);
 
-		return array(
-			'filename' => $filename
-			, 'extension' => $extension
-			, 'etag' => $etag
-			, 'last_modified' => $lastModified
-			, 'content' => $this->content
-		);
-	}
+        return array(
+            'filename' => $filename . '.' . $extension
+            , 'disposition' => $this->disposition
+            , 'extension' => $extension
+            , 'etag' => $etag
+            , 'last_modified' => $lastModified
+            , 'content' => $this->content
+        );
+    }
 }

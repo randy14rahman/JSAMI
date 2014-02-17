@@ -41,37 +41,37 @@ class Request extends \Pomegranate\framework\RpcServer\Request
      */
     protected $_version = '1.0';
 
-	public function __construct($class_path, $raw_index)
-	{
-		$raw = empty($raw_index) ? file_get_contents('php://input') : (isset($_REQUEST[$raw_index]) ? $_REQUEST[$raw_index] : '');
-		if (empty($raw)) {
-			$this->fault('Empty request', RpcServer\Error::ERROR_INVALID_REQUEST);
-			return;
-		}
-		$this->loadJson($raw);
+    public function __construct($class_path, $raw_index)
+    {
+        $raw = empty($raw_index) ? file_get_contents('php://input') : (isset($_REQUEST[$raw_index]) ? $_REQUEST[$raw_index] : '');
+        if (empty($raw)) {
+            $this->fault('Empty request', RpcServer\Error::ERROR_INVALID_REQUEST);
+            return;
+        }
+        $this->loadJson($raw);
 
-		$tokens = explode('/', $class_path);
-		foreach ($tokens as $key => &$token) {
-			if (trim($token) == '') {
-				unset($tokens[$key]);
-			}
-			else { 
-				$token = trim($token);
-			}
-		}
-		$tokens = array_values($tokens);
-		$class_path = '\\' . implode('\\', $tokens);
-		$this->_classPath = $class_path;
+        $tokens = explode('/', $class_path);
+        foreach ($tokens as $key => &$token) {
+            if (trim($token) == '') {
+                unset($tokens[$key]);
+            }
+            else { 
+                $token = trim($token);
+            }
+        }
+        $tokens = array_values($tokens);
+        $class_path = '\\' . implode('\\', $tokens);
+        $this->_classPath = $class_path;
 
-		$server = \Zend_Registry::get('server');
-		$service = $this->_classPath.'::'.$this->_method;
+        $server = \Zend_Registry::get('server');
+        $service = $this->_classPath.'::'.$this->_method;
 
-		if (!$server->isAllowed($service)) {
-			$this->_classPath = '\\Pomegranate\\framework\\Services';
-			$this->_method = 'NotAuthorized';
-			$this->addParam($service);
-		}
-	}
+        if (!$server->isAllowed($service)) {
+            $this->_classPath = '\\Pomegranate\\framework\\Services';
+            $this->_method = 'NotAuthorized';
+            $this->addParam($service);
+        }
+    }
 
     /**
      * Set request state
@@ -222,11 +222,11 @@ class Request extends \Pomegranate\framework\RpcServer\Request
     {
         require_once 'Zend/Json.php';
         try {
-	        $options = \Zend_Json::decode($json);
-	        $this->setOptions($options);
+            $options = \Zend_Json::decode($json);
+            $this->setOptions($options);
         }
         catch (\Exception $ex) {
-        	$this->fault("Invalid request: '$json'", RpcServer\Error::ERROR_INVALID_REQUEST);
+            $this->fault("Invalid request: '$json'", RpcServer\Error::ERROR_INVALID_REQUEST);
         }
     }
 

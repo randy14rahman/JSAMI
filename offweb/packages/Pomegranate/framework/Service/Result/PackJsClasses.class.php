@@ -21,37 +21,37 @@ namespace Pomegranate\framework\Service\Result;
 
 class PackJsClasses extends \Pomegranate\framework\Service\Result
 {
-	protected $content;
+    protected $content;
 
-	public function __construct(array $class_paths)
-	{
-		$this->content = "Pome.suspendLoad();\n";
-		$config = \Zend_Registry::get('config');
-		foreach ($this->class_paths as $cls) {
-			$file_path = $config->package_root . strtr($cls, array('.' => DIRECTORY_SEPARATOR)) . '.class.js';
-			$f = file_get_contents($file_path);
-			$f = strtr($f, array('__CLASS__' => '"'.$path.'"'));
-			ob_start();
-			eval('?>'.$f);
-			$evaluation = ob_get_contents();
-			ob_clean();
-			$this->content .= $evaluation . "\n";
-		}
-		$this->content .= "Pome.resumeLoad();\n";
-	}
+    public function __construct(array $class_paths)
+    {
+        $this->content = "Pome.suspendLoad();\n";
+        $config = \Zend_Registry::get('config');
+        foreach ($this->class_paths as $cls) {
+            $file_path = $config->package_root . strtr($cls, array('.' => DIRECTORY_SEPARATOR)) . '.class.js';
+            $f = file_get_contents($file_path);
+            $f = strtr($f, array('__CLASS__' => '"'.$path.'"'));
+            ob_start();
+            eval('?>'.$f);
+            $evaluation = ob_get_contents();
+            ob_clean();
+            $this->content .= $evaluation . "\n";
+        }
+        $this->content .= "Pome.resumeLoad();\n";
+    }
 
-	public function getData()
-	{
-		$etag = time();
-		$filename = "PackJsClasses_$etag.js";
-		$lastModified = date('D, j M Y H:i:s e', $etag);
+    public function getData()
+    {
+        $etag = time();
+        $filename = "PackJsClasses_$etag.js";
+        $lastModified = date('D, j M Y H:i:s e', $etag);
 
-		return array(
-			'filename' => $filename
-			, 'mime' => 'application/javascript'
-			, 'etag' => $etag
-			, 'last_modified' => $lastModified
-			, 'content' => $this->content
-		);
-	}
+        return array(
+            'filename' => $filename
+            , 'mime' => 'application/javascript'
+            , 'etag' => $etag
+            , 'last_modified' => $lastModified
+            , 'content' => $this->content
+        );
+    }
 }

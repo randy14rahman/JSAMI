@@ -17,38 +17,19 @@
  *   limitations under the License.
  **/
 
-namespace Pomegranate\framework\RpcServer;
+namespace Pomegranate\framework\Session;
 
-abstract class Response
+class SessionNamespace extends \Zend_Session_Namespace
 {
-    protected $errors = array();
-    protected $result = null;
-
-    public function setError(Error $error)
+    public function __construct($namespace = 'Default', $writable = true, $singleInstance = false)
     {
-        $this->errors[] = $error;
-        return $this;
+        \Pomegranate\framework\Session::start(true);
+        parent::__construct($namespace, $singleInstance);
+        \Pomegranate\framework\Session::loadNamespace($namespace, $writable);
     }
 
-    public function getError()
+    public function isWritable()
     {
-        return $this->errors;
+        return \Pomegranate\framework\Session::isNamespaceWritable($this->_namespace);
     }
-
-    public function isError()
-    {
-        return count($this->errors) !== 0;
-    }
-
-    public function setResult(\Pomegranate\framework\Service\Result $result)
-    {
-        $this->result = $result;
-    }
-
-    public function getResult()
-    {
-        return $this->result;
-    }
-
-    abstract public function output();
 }

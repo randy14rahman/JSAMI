@@ -21,15 +21,15 @@ namespace Pomegranate\framework\utilities;
 
 class FileSystemAddress
 {
-	static public function ConcatAddresses()
-	{
-		$p = func_get_arg(0);
-		for ($i=1; $i<func_num_args(); $i++)
-			$p .= '/' . func_get_arg($i);
-		$p = strtr($p, array('\\' => '/'));
-		$result = preg_replace('/(\/\/+)/i', '/', $p);
-		if (substr($result, 0, 5) == 'http:')
-			$result = 'http:/' . substr($result, 5);
-		return $result;
-	}
+    static public function ConcatAddresses()
+    {
+        $p = func_get_arg(0);
+        for ($i=1; $i<func_num_args(); $i++)
+            $p .= '/' . func_get_arg($i);
+        $p = strtr($p, array('\\' => '/'));
+        $result = preg_replace('/(\/\/+)/i', '/', $p);
+        if (substr($result, 0, 5) == 'http:')
+            $result = 'http:/' . substr($result, 5);
+        return $result;
+    }
 }

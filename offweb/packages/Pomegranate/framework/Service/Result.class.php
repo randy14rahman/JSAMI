@@ -21,5 +21,22 @@ namespace Pomegranate\framework\Service;
 
 abstract class Result
 {
-	abstract public function getData();
+    private $headers = array();
+
+    public function addHeader($h)
+    {
+        $this->headers[] = $h;
+    }
+
+    public function setHeaders(array $headers)
+    {
+        $this->headers = $headers;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    abstract public function getData();
 }

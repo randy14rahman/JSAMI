@@ -21,74 +21,108 @@ namespace Pomegranate\framework\JsClass;
 
 class Response extends \Pomegranate\framework\Json\Response
 {
-	public function sendHeaders()
-	{
-		if (headers_sent()) {
-			return;
-		}
+    protected $omitData = false;
 
-		if ($this->isError()) {
-			switch ($this->isError()->getCode()) {
-				case RpcServer\Error::ERROR_FILE_NOT_FOUND:
-					header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
-					break;
+    public function sendHeaders()
+    {
+        if (headers_sent()) {
+            return;
+        }
 
-				case RpcServer\Error::ERROR_PERMISSION_DENIED:
-					header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
-					break;
+        if ($this->isError()) {
+            switch ($this->isError()->getCode()) {
+                case RpcServer\Error::ERROR_FILE_NOT_FOUND:
+                    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
+                    break;
 
-				default:
-					header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-					break;
-			}
-		}
+                case RpcServer\Error::ERROR_PERMISSION_DENIED:
+                    header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
+                    break;
 
-		if (!$this->isError()
-		&& ($this->result instanceof \Pomegranate\framework\Service\Result\EvaluateFile
-		|| $this->result instanceof \Pomegranate\framework\Service\Result\DynamicResource
-		|| $this->result instanceof \Pomegranate\framework\Service\Result\PackJsClassesFile
-		|| $this->result instanceof \Pomegranate\framework\Service\Result\LocalFile)) {
-			$data = $this->result->getData();
-			if ($this->result instanceof \Pomegranate\framework\Service\Result\EvaluateFile
-			|| $this->result instanceof \Pomegranate\framework\Service\Result\DynamicResource
-			|| $this->result instanceof \Pomegranate\framework\Service\Result\PackJsClassesFile) {
-				if (isset($data['filename']) && !empty($data['filename'])) {
-					header("Content-Disposition: inline; filename=\"{$data['filename']}\"");
-				}
-				if (isset($data['etag']) && !empty($data['etag'])) {
-					header("ETag: \"{$data['etag']}\"");
-				}
-				if (isset($data['last_modified']) && !empty($data['last_modified'])) {
-					header("Last-Modified: {$data['last_modified']}");
-				}
-			}
-			else if ($this->result instanceof \Pomegranate\framework\Service\Result\LocalFile) {
-			}
-		}
-		else if (!$this->isError()) {
-			header($_SERVER['SERVER_PROTOCOL'] . ' 204 No Content');
-			return;
-		}
+                default:
+                    header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+                    break;
+            }
+        }
 
-		header('Content-Type: application/javascript', true);
-	}
+        if (!$this->isError()
+        && ($this->result instanceof \Pomegranate\framework\Service\Result\EvaluateFile
+        || $this->result instanceof \Pomegranate\framework\Service\Result\DynamicResource
+        || $this->result instanceof \Pomegranate\framework\Service\Result\PackJsClassesFile
+        || $this->result instanceof \Pomegranate\framework\Service\Result\LocalFile)) {
+            $data = $this->result->getData();
+            header_remove();
+            if ($this->result != null) {
+                foreach ($this->result->getHeaders() as $h) {
+                    header($h);
+                }
+            }
+            if ($this->result instanceof \Pomegranate\framework\Service\Result\EvaluateFile
+            || $this->result instanceof \Pomegranate\framework\Service\Result\DynamicResource
+            || $this->result instanceof \Pomegranate\framework\Service\Result\PackJsClassesFile) {
+                if (isset($data['etag']) && !empty($data['etag'])) {
+                    if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && '"'.$data['etag'].'"' == $_SERVER['HTTP_IF_NONE_MATCH']) {
+                        $this->omitData = true;
+                        header('HTTP/1.0 304 Not modified');
+                        return;
+                    }
+                    header("ETag: \"{$data['etag']}\"");
+                }
+                if (isset($data['filename']) && !empty($data['filename'])) {
+                    $disposition = isset($data['disposition']) ? $data['disposition'] : 'inline';
+                    header("Content-Disposition: $disposition; filename=\"{$data['filename']}\"");
+                }
+                else if (isset($data['disposition'])) {
+                    header("Content-Disposition: {$data['disposition']}");
+                }
+                header('Content-Length: ' . strlen($data['content']));
+                if (isset($data['last_modified']) && !empty($data['last_modified'])) {
+                    header("Last-Modified: {$data['last_modified']}");
+                }
+            }
+            else if ($this->result instanceof \Pomegranate\framework\Service\Result\LocalFile) {
+                $filename = pathinfo($data['file_path'], PATHINFO_FILENAME);
+                $extension = pathinfo($data['file_path'], PATHINFO_EXTENSION);
+                $mime = $this->get_mime_type($extension);
+                $etag = filemtime($data['file_path']);
+                $lastModified = date('D, j M Y H:i:s e', $etag);
 
-	public function sendContent()
-	{
-		if (!$this->isError()
-		&& ($this->result instanceof \Pomegranate\framework\Service\Result\EvaluateFile
-		|| $this->result instanceof \Pomegranate\framework\Service\Result\DynamicResource
-		|| $this->result instanceof \Pomegranate\framework\Service\Result\PackJsClassesFile
-		|| $this->result instanceof \Pomegranate\framework\Service\Result\LocalFile)) {
-			$data = $this->result->getData();
-			if ($this->result instanceof \Pomegranate\framework\Service\Result\EvaluateFile
-			|| $this->result instanceof \Pomegranate\framework\Service\Result\DynamicResource
-			|| $this->result instanceof \Pomegranate\framework\Service\Result\PackJsClassesFile) {
-				echo $data['content'];
-			}
-			else if ($this->result instanceof \Pomegranate\framework\Service\Result\LocalFile) {
-				readfile($data['file_path']);
-			}
-		}
-	}
+                if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && '"'.$etag.'"' == $_SERVER['HTTP_IF_NONE_MATCH']) {
+                    $this->omitData = true;
+                    header('HTTP/1.0 304 Not modified');
+                    return;
+                }
+                
+                header("ETag: \"{$etag}\"");
+                header("Content-Disposition: inline; filename=\"{$filename}\"");
+                header('Content-Length: ' . filesize($data['file_path']));
+                header("Last-Modified: {$lastModified}");
+            }
+        }
+        else if (!$this->isError()) {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 204 No Content');
+            return;
+        }
+
+        header('Content-Type: application/javascript', true);
+    }
+
+    public function sendContent()
+    {
+        if (!$this->isError() && !$this->omitData
+        && ($this->result instanceof \Pomegranate\framework\Service\Result\EvaluateFile
+        || $this->result instanceof \Pomegranate\framework\Service\Result\DynamicResource
+        || $this->result instanceof \Pomegranate\framework\Service\Result\PackJsClassesFile
+        || $this->result instanceof \Pomegranate\framework\Service\Result\LocalFile)) {
+            $data = $this->result->getData();
+            if ($this->result instanceof \Pomegranate\framework\Service\Result\EvaluateFile
+            || $this->result instanceof \Pomegranate\framework\Service\Result\DynamicResource
+            || $this->result instanceof \Pomegranate\framework\Service\Result\PackJsClassesFile) {
+                echo $data['content'];
+            }
+            else if ($this->result instanceof \Pomegranate\framework\Service\Result\LocalFile) {
+                readfile($data['file_path']);
+            }
+        }
+    }
 }

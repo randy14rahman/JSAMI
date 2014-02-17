@@ -17,20 +17,34 @@
  **/
 
 Pomegranate.extend(".Pomegranate.framework.MvcBase", __CLASS__, {
-	init: function(parent) {
-		this._super(parent);
-	}
+    init: function(parent) {
+        this._super(parent);
+    }
 
-	, getPackage: function() {
-		return this.parentController.getPackage();
-	}
+    , getPackage: function() {
+        return this.parentController.getPackage();
+    }
 
-	, getParent: function() {
-		return this.parentController;
-	}
+    , getParent: function() {
+        return this.parentController;
+    }
 
-	, dispose: function() {
-		this._super();
-		this.getParent().removeChild(this);
-	}
+    , dispose: function() {
+        this._super();
+        this.getParent().removeChild(this);
+    }
+
+    , resource: function(input) {
+        if (input.context) {
+            input.base = this.getNamespacePath(input.context);
+            delete input["context"];
+        }
+        return Pomegranate.resource(input);
+    }
+
+    , getNamespacePath: function(path) {
+        var namespace_pieces = path.split(".");
+        namespace_pieces.pop();
+        return namespace_pieces.join(".");
+    }
 });
